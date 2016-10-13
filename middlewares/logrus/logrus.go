@@ -67,8 +67,6 @@ type Logger struct {
 	// Name is the name of the application as recorded in latency metrics
 	Name string
 
-	logStarting bool
-
 	clock timer
 }
 
@@ -79,10 +77,9 @@ func NewLogger() *Logger {
 	log.Formatter = &logrus.TextFormatter{FullTimestamp: true}
 	log.Out = os.Stderr
 	return &Logger{
-		Logrus:      log,
-		Name:        "web",
-		logStarting: true,
-		clock:       &realClock{},
+		Logrus: log,
+		Name:   "web",
+		clock:  &realClock{},
 	}
 }
 
@@ -100,22 +97,15 @@ func NewCustomMiddleware(level logrus.Level, formatter logrus.Formatter, name st
 	log.Formatter = formatter
 	log.Out = os.Stderr
 	return &Logger{
-		Logrus:      log,
-		Name:        name,
-		logStarting: true,
-		clock:       &realClock{},
+		Logrus: log,
+		Name:   name,
+		clock:  &realClock{},
 	}
 }
 
 // NewMiddlewareFromLogger returns a new *Logger which writes to a given logrus logger.
 func NewMiddlewareFromLogger(logger *logrus.Logger, name string) *Logger {
-	return &Logger{Logrus: logger, Name: name, logStarting: true, clock: &realClock{}}
-}
-
-// SetLogStarting accepts a bool to control the logging of "started handling
-// request" prior to passing to the next middleware
-func (l *Logger) SetLogStarting(v bool) {
-	l.logStarting = v
+	return &Logger{Logrus: logger, Name: name, clock: &realClock{}}
 }
 
 func (l *Logger) LoggerMiddleware(h http.Handler) http.Handler {
@@ -138,9 +128,6 @@ func (l *Logger) LoggerMiddleware(h http.Handler) http.Handler {
 			entry = entry.WithField("request_id", reqID)
 		}
 
-		if l.logStarting {
-			entry.Info("started handling request")
-		}
 		res := &LogResponseWriter{ResponseWriter: w}
 		h.ServeHTTP(res, r)
 
