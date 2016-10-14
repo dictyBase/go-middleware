@@ -1,7 +1,6 @@
 package logrus
 
 import (
-	"fmt"
 	"io"
 	"net/http"
 	"os"
@@ -34,6 +33,9 @@ func (w *LogResponseWriter) Header() http.Header {
 
 // Capture the size of the data written and satisfy the http.ResponseWriter interface
 func (w *LogResponseWriter) Write(data []byte) (int, error) {
+	if w.status == 0 {
+		w.status = http.StatusOK
+	}
 	written, err := w.ResponseWriter.Write(data)
 	w.size += written
 	return written, err
@@ -41,8 +43,8 @@ func (w *LogResponseWriter) Write(data []byte) (int, error) {
 
 // Capture the status code and satisfies the http.ResponseWriter interface
 func (w *LogResponseWriter) WriteHeader(code int) {
-	w.status = code
 	w.ResponseWriter.WriteHeader(code)
+	w.status = code
 }
 
 type timer interface {
@@ -74,7 +76,7 @@ type Logger struct {
 func NewLogger() *Logger {
 	log := logrus.New()
 	log.Level = logrus.InfoLevel
-	log.Formatter = &logrus.TextFormatter{FullTimestamp: true}
+	log.Formatter = &logrus.TextFormatter{TimestampFormat: "02/Jan/2006:15:04:05"}
 	log.Out = os.Stderr
 	return &Logger{
 		Logrus: log,
@@ -117,26 +119,18 @@ func (l *Logger) LoggerMiddleware(h http.Handler) http.Handler {
 		if realIP := r.Header.Get("X-Real-IP"); realIP != "" {
 			remoteAddr = realIP
 		}
-
 		entry := l.Logrus.WithFields(logrus.Fields{
 			"request": r.RequestURI,
 			"method":  r.Method,
 			"remote":  remoteAddr,
 		})
-
-		if reqID := r.Header.Get("X-Request-Id"); reqID != "" {
-			entry = entry.WithField("request_id", reqID)
-		}
-
 		res := &LogResponseWriter{ResponseWriter: w}
 		h.ServeHTTP(res, r)
 
 		latency := l.clock.Since(start)
 		entry.WithFields(logrus.Fields{
-			"status":      res.Status(),
-			"text_status": http.StatusText(res.Status()),
-			"took":        latency,
-			fmt.Sprintf("measure#%s.latency", l.Name): latency.Nanoseconds(),
+			"status": res.Status(),
+			"took":   latency,
 		}).Info("completed handling request")
 	}
 	return http.HandlerFunc(fn)
