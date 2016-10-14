@@ -120,9 +120,11 @@ func (l *Logger) LoggerMiddleware(h http.Handler) http.Handler {
 			remoteAddr = realIP
 		}
 		entry := l.Logrus.WithFields(logrus.Fields{
-			"request": r.RequestURI,
-			"method":  r.Method,
-			"remote":  remoteAddr,
+			"request":    r.RequestURI,
+			"method":     r.Method,
+			"remote":     remoteAddr,
+			"user-agent": r.UserAgent(),
+			"referer":    r.Referer(),
 		})
 		res := &LogResponseWriter{ResponseWriter: w}
 		h.ServeHTTP(res, r)
@@ -131,6 +133,7 @@ func (l *Logger) LoggerMiddleware(h http.Handler) http.Handler {
 		entry.WithFields(logrus.Fields{
 			"status": res.Status(),
 			"took":   latency,
+			"size":   res.Size(),
 		}).Info("completed handling request")
 	}
 	return http.HandlerFunc(fn)
