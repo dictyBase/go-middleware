@@ -110,6 +110,37 @@ func NewMiddlewareFromLogger(logger *logrus.Logger, name string) *Logger {
 	return &Logger{Logrus: logger, Name: name, clock: &realClock{}}
 }
 
+// The middleware function that works with http.HandlerFunc type
+func (l *Logger) LoggerMiddlewareFn(fn http.HandlerFunc) http.HandlerFunc {
+	newfn := func(w http.ResponseWriter, r *http.Request) {
+		start := l.clock.Now()
+
+		// Try to get the real IP
+		remoteAddr := r.RemoteAddr
+		if realIP := r.Header.Get("X-Real-IP"); realIP != "" {
+			remoteAddr = realIP
+		}
+		entry := l.Logrus.WithFields(logrus.Fields{
+			"request":    r.RequestURI,
+			"method":     r.Method,
+			"remote":     remoteAddr,
+			"user-agent": r.UserAgent(),
+			"referer":    r.Referer(),
+		})
+		res := &LogResponseWriter{ResponseWriter: w}
+		fn(res, r)
+
+		latency := l.clock.Since(start)
+		entry.WithFields(logrus.Fields{
+			"status": res.Status(),
+			"took":   latency,
+			"size":   res.Size(),
+		}).Info("completed handling request")
+	}
+	return newfn
+}
+
+// The middleware function that works with http.Handler type
 func (l *Logger) LoggerMiddleware(h http.Handler) http.Handler {
 	fn := func(w http.ResponseWriter, r *http.Request) {
 		start := l.clock.Now()
