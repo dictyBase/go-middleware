@@ -6,7 +6,7 @@ import (
 	"os"
 	"time"
 
-	"github.com/Sirupsen/logrus"
+	"gopkg.in/Sirupsen/logrus.v0"
 )
 
 // A custom type that extends http.ResponseWriter interface
@@ -72,11 +72,29 @@ type Logger struct {
 	clock timer
 }
 
+// NewJSONLogger returns a new *Logger that logs in JSON format
+func NewJSONLogger() *Logger {
+	log := logrus.New()
+	log.Level = logrus.InfoLevel
+	log.Formatter = &logrus.JSONFormatter{
+		TimestampFormat: "02/Jan/2006:15:04:05",
+	}
+	log.Out = os.Stderr
+	return &Logger{
+		Logrus: log,
+		Name:   "web",
+		clock:  &realClock{},
+	}
+}
+
 // NewLogger returns a new *Logger
 func NewLogger() *Logger {
 	log := logrus.New()
 	log.Level = logrus.InfoLevel
-	log.Formatter = &logrus.TextFormatter{TimestampFormat: "02/Jan/2006:15:04:05"}
+	log.Formatter = &logrus.TextFormatter{
+		TimestampFormat: "02/Jan/2006:15:04:05",
+		FullTimestamp:   true,
+	}
 	log.Out = os.Stderr
 	return &Logger{
 		Logrus: log,
