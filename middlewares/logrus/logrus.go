@@ -1,3 +1,7 @@
+// Package logrus is a logrus(https://godoc.org/github.com/Sirupsen/logrus)
+// net/http middleware to log information about http handler. It can output
+// both in text and JSON format. Both output format can be completely
+// customized.
 package logrus
 
 import (
