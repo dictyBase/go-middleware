@@ -87,6 +87,13 @@ func NewJSONLogger() *Logger {
 	}
 }
 
+// NewJSONFileLogger writes to a file in JSON format
+func NewJSONFileLogger(w io.Writer) *Logger {
+	logger := NewJSONLogger()
+	logger.Logrus.Out = w
+	return logger
+}
+
 // NewLogger returns a new *Logger
 func NewLogger() *Logger {
 	log := logrus.New()
