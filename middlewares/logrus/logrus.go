@@ -13,7 +13,7 @@ import (
 	"gopkg.in/Sirupsen/logrus.v0"
 )
 
-// A custom type that extends http.ResponseWriter interface
+// LogResponseWriter is a custom type that extends http.ResponseWriter interface
 // to capture and provide an easy access to http status code
 type LogResponseWriter struct {
 	http.ResponseWriter
@@ -21,21 +21,22 @@ type LogResponseWriter struct {
 	size   int
 }
 
-// Easy way to retrieve the status code
+// Status is a easy way to retrieve the status code
 func (w *LogResponseWriter) Status() int {
 	return w.status
 }
 
+// Size provides the size of response object
 func (w *LogResponseWriter) Size() int {
 	return w.size
 }
 
-// Returns the header to satisty the http.ResponseWriter interface
+// Header returns the header to satisfy the http.ResponseWriter interface
 func (w *LogResponseWriter) Header() http.Header {
 	return w.ResponseWriter.Header()
 }
 
-// Capture the size of the data written and satisfy the http.ResponseWriter interface
+// Write capture the size of the data written and satisfy the http.ResponseWriter interface
 func (w *LogResponseWriter) Write(data []byte) (int, error) {
 	if w.status == 0 {
 		w.status = http.StatusOK
@@ -45,7 +46,7 @@ func (w *LogResponseWriter) Write(data []byte) (int, error) {
 	return written, err
 }
 
-// Capture the status code and satisfies the http.ResponseWriter interface
+// WriteHeader capture the status code and satisfies the http.ResponseWriter interface
 func (w *LogResponseWriter) WriteHeader(code int) {
 	w.ResponseWriter.WriteHeader(code)
 	w.status = code
@@ -58,10 +59,12 @@ type timer interface {
 
 type realClock struct{}
 
+// Now return the current time
 func (rc *realClock) Now() time.Time {
 	return time.Now()
 }
 
+// Since returns the time passed
 func (rc *realClock) Since(t time.Time) time.Duration {
 	return time.Since(t)
 }
@@ -139,8 +142,8 @@ func NewMiddlewareFromLogger(logger *logrus.Logger, name string) *Logger {
 	return &Logger{Logrus: logger, Name: name, clock: &realClock{}}
 }
 
-// The middleware function that works with http.HandlerFunc type
-func (l *Logger) LoggerMiddlewareFn(fn http.HandlerFunc) http.HandlerFunc {
+// MiddlewareFn works with http.HandlerFunc type
+func (l *Logger) MiddlewareFn(fn http.HandlerFunc) http.HandlerFunc {
 	newfn := func(w http.ResponseWriter, r *http.Request) {
 		start := l.clock.Now()
 
@@ -169,8 +172,8 @@ func (l *Logger) LoggerMiddlewareFn(fn http.HandlerFunc) http.HandlerFunc {
 	return newfn
 }
 
-// The middleware function that works with http.Handler type
-func (l *Logger) LoggerMiddleware(h http.Handler) http.Handler {
+// Middleware works with http.Handler type
+func (l *Logger) Middleware(h http.Handler) http.Handler {
 	fn := func(w http.ResponseWriter, r *http.Request) {
 		start := l.clock.Now()
 
