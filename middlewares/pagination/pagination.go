@@ -26,8 +26,8 @@ var (
 	DefaultEntries = 10
 )
 
-// Prop represents various pagination properties
-type Prop struct {
+// Props represents various pagination properties
+type Props struct {
 	// Total no of records that will be paginated
 	Records int
 	// No of entries to have per page
@@ -45,7 +45,7 @@ func MiddlewareFn(fn http.HandlerFunc) http.HandlerFunc {
 			if size, ok := values["page[size]"]; ok {
 				curr, _ := strconv.Atoi(num[0])
 				entries, _ := strconv.Atoi(size[0])
-				prop := &Prop{
+				prop := &Props{
 					Current: curr,
 					Entries: entries,
 				}
