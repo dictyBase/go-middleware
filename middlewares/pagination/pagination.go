@@ -18,10 +18,12 @@ func (c contextKey) String() string {
 	return "pagination context key " + string(c)
 }
 
-// ContextKeyPagination is the key used for stroing Prop struct in request
-// context
 var (
+	// ContextKeyPagination is the key used for stroing Prop struct in request
+	// context
 	ContextKeyPagination = contextKey("page")
+	// DefaultEntries is the number of entries per page of data
+	DefaultEntries = 10
 )
 
 // Prop represents various pagination properties
