@@ -18,7 +18,7 @@ func (c contextKey) String() string {
 
 // contextKeyParams is the key used for stroing router Param structure
 var (
-	contextKeyParams = contextKey("params")
+	ContextKeyParams = contextKey("params")
 )
 
 // Wrapper is a wrapper for httprouter
@@ -77,12 +77,12 @@ func (r *Wrapper) Put(path string, fn http.HandlerFunc) {
 // httprouter. Generally this function is not called directly.
 func HandlerFunc(fn http.HandlerFunc) httprouter.Handle {
 	return func(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
-		ctx := context.WithValue(r.Context(), contextKeyParams, p)
+		ctx := context.WithValue(r.Context(), ContextKeyParams, p)
 		fn(w, r.WithContext(ctx))
 	}
 }
 
 // Params returns the httprouter.Params struct from the http request
 func Params(r *http.Request) httprouter.Params {
-	return r.Context().Value(contextKeyParams).(httprouter.Params)
+	return r.Context().Value(ContextKeyParams).(httprouter.Params)
 }
