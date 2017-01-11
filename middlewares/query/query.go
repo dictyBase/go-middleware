@@ -32,7 +32,7 @@ func (c contextKey) String() string {
 }
 
 var (
-	// ContextKeyQueryParam is the key used for stroing Params struct in
+	// ContextKeyQueryParams is the key used for stroing Params struct in
 	// request context
 	ContextKeyQueryParams = contextKey("jsparams")
 	acceptH               = http.CanonicalHeaderKey("accept")
@@ -46,7 +46,7 @@ type Params struct {
 	// contain include query paramters
 	Includes []string
 	// contain fields query paramters
-	Fields map[string]string
+	Fields map[string][]string
 	// contain filter query parameters
 	Filters map[string]string
 	// check for presence of fields parameters
@@ -59,7 +59,7 @@ type Params struct {
 
 func newParams() *Params {
 	return &Params{
-		Fields:  make(map[string]string),
+		Fields:  make(map[string][]string),
 		Filters: make(map[string]string),
 	}
 }
@@ -83,17 +83,37 @@ func MiddlewareFn(fn http.HandlerFunc) http.HandlerFunc {
 					return
 				}
 				if m := qregx.FindStringSubmatch(k); m != nil {
-					params.Filters[k] = v[0]
+					params.Filters[m[1]] = v[0]
 					if !params.HasFilters {
 						params.HasFilters = true
 					}
+				} else {
+					queryParamError(
+						w,
+						http.StatusBadRequest,
+						"Invalid query parameter",
+						fmt.Sprintf("Unable to match filter query param %s", v[0]),
+					)
+					return
 				}
 			case strings.HasPrefix(k, "fields"):
 				if m := qregx.FindStringSubmatch(k); m != nil {
-					params.Fields[k] = v[0]
+					if strings.Contains(v[0], ",") {
+						params.Fields[m[1]] = strings.Split(v[0], ",")
+					} else {
+						params.Fields[m[1]] = []string{v[0]}
+					}
 					if !params.HasFields {
 						params.HasFields = true
 					}
+				} else {
+					queryParamError(
+						w,
+						http.StatusBadRequest,
+						"Invalid query parameter",
+						fmt.Sprintf("Unable to match fields query param %s", v[0]),
+					)
+					return
 				}
 			case k == "include":
 				if strings.Contains(v[0], ",") {
@@ -142,7 +162,7 @@ func validateHeader(w http.ResponseWriter, r *http.Request) bool {
 			http.StatusNotAcceptable,
 			"Accept header is not acceptable",
 			fmt.Sprintf(
-				"The given Accept header %s is incorrect for filter query extension",
+				"The given Accept header value %s is incorrect for filter query extension",
 				r.Header.Get(acceptH),
 			),
 		)
@@ -154,7 +174,7 @@ func validateHeader(w http.ResponseWriter, r *http.Request) bool {
 			http.StatusUnsupportedMediaType,
 			"Media type is not supported",
 			fmt.Sprintf(
-				"The given media type %s in Content-Type header %s is not supported",
+				"The given media type %s in Content-Type header is not supported",
 				r.Header.Get(contentType),
 			),
 		)
