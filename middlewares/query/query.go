@@ -21,6 +21,7 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/dictyBase/apihelpers/apherror"
 	"github.com/manyminds/api2go"
 )
 
@@ -88,11 +89,11 @@ func MiddlewareFn(fn http.HandlerFunc) http.HandlerFunc {
 						params.HasFilters = true
 					}
 				} else {
-					queryParamError(
+					apherror.JSONAPIError(
 						w,
-						http.StatusBadRequest,
-						"Invalid query parameter",
-						fmt.Sprintf("Unable to match filter query param %s", v[0]),
+						apherror.ErrQueryParam.New(
+							fmt.Sprintf("Unable to match filter query param %s", v[0]),
+						),
 					)
 					return
 				}
@@ -107,11 +108,11 @@ func MiddlewareFn(fn http.HandlerFunc) http.HandlerFunc {
 						params.HasFields = true
 					}
 				} else {
-					queryParamError(
+					apherror.JSONAPIError(
 						w,
-						http.StatusBadRequest,
-						"Invalid query parameter",
-						fmt.Sprintf("Unable to match fields query param %s", v[0]),
+						apherror.ErrQueryParam.New(
+							fmt.Sprintf("Unable to match fields query param %s", v[0]),
+						),
 					)
 					return
 				}
@@ -157,25 +158,25 @@ func queryParamError(w http.ResponseWriter, status int, title, detail string) {
 
 func validateHeader(w http.ResponseWriter, r *http.Request) bool {
 	if r.Header.Get(acceptH) != filterMediaType {
-		queryParamError(
+		apherror.JSONAPIError(
 			w,
-			http.StatusNotAcceptable,
-			"Accept header is not acceptable",
-			fmt.Sprintf(
-				"The given Accept header value %s is incorrect for filter query extension",
-				r.Header.Get(acceptH),
+			apherror.ErrNotAcceptable.New(
+				fmt.Sprintf(
+					"The given Accept header value %s is incorrect for filter query extension",
+					r.Header.Get(acceptH),
+				),
 			),
 		)
 		return false
 	}
 	if r.Header.Get(acceptH) != r.Header.Get(contentType) {
-		queryParamError(
+		apherror.JSONAPIError(
 			w,
-			http.StatusUnsupportedMediaType,
-			"Media type is not supported",
-			fmt.Sprintf(
-				"The given media type %s in Content-Type header is not supported",
-				r.Header.Get(contentType),
+			apherror.ErrUnsupportedMedia.New(
+				fmt.Sprintf(
+					"The given media type %s in Content-Type header is not supported",
+					r.Header.Get(contentType),
+				),
 			),
 		)
 		return false
