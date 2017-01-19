@@ -42,9 +42,13 @@ func getfilter(w http.ResponseWriter, r *http.Request) {
 func getfields(w http.ResponseWriter, r *http.Request) {
 	p, ok := r.Context().Value(ContextKeyQueryParams).(*Params)
 	if ok {
-		if p.HasFields {
+		if p.HasSparseFields {
 			w.WriteHeader(http.StatusOK)
-			err := json.NewEncoder(w).Encode(p.Fields)
+			m := make(map[string][]string)
+			for k, v := range p.SparseFields {
+				m[k] = v.GetAll()
+			}
+			err := json.NewEncoder(w).Encode(m)
 			if err != nil {
 				http.Error(w, err.Error(), http.StatusInternalServerError)
 				return

@@ -33,7 +33,7 @@ func (c contextKey) String() string {
 }
 
 var (
-	// ContextKeyQueryParams is the key used for stroing Params struct in
+	// ContextKeyQueryParams is the key used for storing Params struct in
 	// request context
 	ContextKeyQueryParams = contextKey("jsparams")
 	acceptH               = http.CanonicalHeaderKey("accept")
@@ -42,16 +42,25 @@ var (
 	qregx                 = regexp.MustCompile(`^\w+\[(\w+)\]$`)
 )
 
+type Fields struct {
+	FromRelationship bool
+	names            []string
+}
+
+func (fl *Fields) GetAll() []string {
+	return fl.names
+}
+
 // Params is container for various query parameters
 type Params struct {
 	// contain include query paramters
 	Includes []string
 	// contain fields query paramters
-	Fields map[string][]string
+	SparseFields map[string]*Fields
 	// contain filter query parameters
 	Filters map[string]string
 	// check for presence of fields parameters
-	HasFields bool
+	HasSparseFields bool
 	// check for presence of include parameters
 	HasIncludes bool
 	// check for presence of filter parameters
@@ -60,8 +69,8 @@ type Params struct {
 
 func newParams() *Params {
 	return &Params{
-		Fields:  make(map[string][]string),
-		Filters: make(map[string]string),
+		Filters:      make(map[string]string),
+		SparseFields: make(map[string]*Fields),
 	}
 }
 
@@ -99,13 +108,16 @@ func MiddlewareFn(fn http.HandlerFunc) http.HandlerFunc {
 				}
 			case strings.HasPrefix(k, "fields"):
 				if m := qregx.FindStringSubmatch(k); m != nil {
+					f := &Fields{}
 					if strings.Contains(v[0], ",") {
-						params.Fields[m[1]] = strings.Split(v[0], ",")
+						f.names = strings.Split(v[0], ",")
+						params.SparseFields[m[1]] = f
 					} else {
-						params.Fields[m[1]] = []string{v[0]}
+						f.names = []string{v[0]}
+						params.SparseFields[m[1]] = f
 					}
-					if !params.HasFields {
-						params.HasFields = true
+					if !params.HasSparseFields {
+						params.HasSparseFields = true
 					}
 				} else {
 					apherror.JSONAPIError(
@@ -129,7 +141,7 @@ func MiddlewareFn(fn http.HandlerFunc) http.HandlerFunc {
 				continue
 			}
 		}
-		if params.HasFilters || params.HasFields || params.HasIncludes {
+		if params.HasFilters || params.HasSparseFields || params.HasIncludes {
 			ctx := context.WithValue(r.Context(), ContextKeyQueryParams, params)
 			fn(w, r.WithContext(ctx))
 		} else {
