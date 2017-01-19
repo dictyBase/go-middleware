@@ -42,11 +42,15 @@ var (
 	qregx                 = regexp.MustCompile(`^\w+\[(\w+)\]$`)
 )
 
+// Fields is the container for field names
 type Fields struct {
-	FromRelationship bool
-	names            []string
+	// Flag to indicate if the field's type name is from a relationship
+	// resource
+	Relationship bool
+	names        []string
 }
 
+// GetAll returns all the fields name
 func (fl *Fields) GetAll() []string {
 	return fl.names
 }
@@ -108,7 +112,7 @@ func MiddlewareFn(fn http.HandlerFunc) http.HandlerFunc {
 				}
 			case strings.HasPrefix(k, "fields"):
 				if m := qregx.FindStringSubmatch(k); m != nil {
-					f := &Fields{}
+					f := &Fields{Relationship: false}
 					if strings.Contains(v[0], ",") {
 						f.names = strings.Split(v[0], ",")
 						params.SparseFields[m[1]] = f
