@@ -47,12 +47,21 @@ type Fields struct {
 	// Flag to indicate if the field's type name is from a relationship
 	// resource
 	Relationship bool
-	names        []string
+	values       []string
 }
 
 // GetAll returns all the fields name
 func (fl *Fields) GetAll() []string {
-	return fl.names
+	return fl.values
+}
+
+//Append append field values
+func (fl *Fields) Append(s ...string) {
+	if len(fl.values) > 0 {
+		fl.values = append(fl.values, s...)
+	} else {
+		fl.values = s
+	}
 }
 
 // Params is container for various query parameters
@@ -114,10 +123,10 @@ func MiddlewareFn(fn http.HandlerFunc) http.HandlerFunc {
 				if m := qregx.FindStringSubmatch(k); m != nil {
 					f := &Fields{Relationship: false}
 					if strings.Contains(v[0], ",") {
-						f.names = strings.Split(v[0], ",")
+						f.Append(strings.Split(v[0], ",")...)
 						params.SparseFields[m[1]] = f
 					} else {
-						f.names = []string{v[0]}
+						f.Append(v[0])
 						params.SparseFields[m[1]] = f
 					}
 					if !params.HasSparseFields {
