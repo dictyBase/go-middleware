@@ -10,7 +10,7 @@ import (
 	"os"
 	"time"
 
-	"gopkg.in/Sirupsen/logrus.v0"
+	"github.com/sirupsen/logrus"
 )
 
 // LogResponseWriter is a custom type that extends http.ResponseWriter interface
