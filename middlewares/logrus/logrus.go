@@ -5,9 +5,11 @@
 package logrus
 
 import (
+	"fmt"
 	"io"
 	"net/http"
 	"os"
+	"strings"
 	"time"
 
 	"github.com/sirupsen/logrus"
@@ -191,11 +193,19 @@ func (l *Logger) Middleware(h http.Handler) http.Handler {
 		})
 		res := &LogResponseWriter{ResponseWriter: w}
 		h.ServeHTTP(res, r)
-
 		latency := l.clock.Since(start)
+		var b strings.Builder
+		switch {
+		case latency < 500*time.Microsecond:
+			fmt.Fprintf(&b, "%0.2f µsec", float64(latency.Nanoseconds())*float64(1000))
+		case latency < 900*time.Millisecond:
+			fmt.Fprintf(&b, "%0.2f msec", float64(latency.Nanoseconds())*float64(1000*1000))
+		case latency < 100*time.Second:
+			fmt.Fprintf(&b, "%0.2f sec", float64(latency.Nanoseconds())*float64(1000*1000*1000))
+		}
 		entry.WithFields(logrus.Fields{
 			"status": res.Status(),
-			"took":   latency,
+			"took":   b.String(),
 			"size":   res.Size(),
 		}).Info("completed handling request")
 	}
