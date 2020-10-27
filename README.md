@@ -21,4 +21,4 @@ Collection of [net/http](https://golang.org/pkg/net/http/) compatible golang mid
 ![Tags](https://badgen.net/github/tags/dictyBase/go-middlewares)   
 ![GitHub repo size](https://img.shields.io/github/repo-size/dictyBase/go-middlewares?style=plastic)
 ![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/dictyBase/go-middlewares?style=plastic)
-![Lines of Code](https://badgen.net/codeclimate/loc/dictyBase/go-middlewares)](https://codeclimate.com/github/dictyBase/go-middlewares/code)   
+![Lines of Code](https://badgen.net/codeclimate/loc/dictyBase/go-middlewares)]
