@@ -16,7 +16,7 @@ var noCacheHeaders = map[string]string{
 	"X-Accel-Expires": "0",
 }
 
-// Handler as per http://wiki.nginx.org/HttpProxyModule sets:
+// Handler as per http://wiki.nginx.org/HttpProxyModule. It sets:
 //      Expires: Thu, 01 Jan 1970 00:00:00 UTC
 //      Cache-Control: no-cache, private, max-age=0
 //      X-Accel-Expires: 0
