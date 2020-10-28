@@ -28,7 +28,8 @@ func (c Chain) Then(fn http.Handler) http.Handler {
 	return fn
 }
 
-// Append takes a new http.Handler, appends and returns a new chain from the existing one
+// Append takes a new http.Handler, appends and returns a new chain from the existing one.
+// The given middleware chains are added to the end of request flow.
 func (c Chain) Append(m ...MiddlewareFn) Chain {
 	nc := make([]MiddlewareFn, 0, len(c.middlewares)+len(m))
 	nc = append(nc, c.middlewares...)
@@ -36,6 +37,7 @@ func (c Chain) Append(m ...MiddlewareFn) Chain {
 }
 
 // Extend takes a new Chain, appends and returns a new chain from the existing one
+// The given middleware chain is added to the end of request flow.
 func (c Chain) Extend(chain Chain) Chain {
 	return c.Append(chain.middlewares...)
 }
