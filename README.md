@@ -1,6 +1,6 @@
 # go-middlewares
 [![License](https://img.shields.io/badge/License-BSD%202--Clause-blue.svg)](LICENSE)  
-[![GoDoc](https://pkg.go.dev/badge/dictyBase/go-middlewares)](https://pkg.go.dev/dictyBase/go-middlewares)   
+[![GoDoc](https://pkg.go.dev/badge/github.com/dictyBase/go-middlewares)](https://pkg.go.dev/github.com/dictyBase/go-middlewares)
 [![Maintainability](https://api.codeclimate.com/v1/badges/6be0548f1ca22d27fc01/maintainability)](https://codeclimate.com/github/dictyBase/go-middlewares/maintainability)
 ![Last commit](https://badgen.net/github/last-commit/dictyBase/go-middlewares/develop)   
 [![Funding](https://badgen.net/badge/NIGMS/Rex%20L%20Chisholm,dictyBase,DCR/yellow?list=|)](https://projectreporter.nih.gov/project_info_description.cfm?aid=10024726&icde=0)
