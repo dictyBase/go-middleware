@@ -1,6 +1,7 @@
 package nocache
 
 import (
+	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -12,7 +13,7 @@ import (
 type testHandler struct{}
 
 func (h *testHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	w.Write([]byte("hello world"))
+	fmt.Fprint(w, "hello world")
 }
 
 func TestHandler(t *testing.T) {
@@ -20,6 +21,7 @@ func TestHandler(t *testing.T) {
 	defer ts.Close()
 	assert := require.New(t)
 	res, err := ts.Client().Get(ts.URL)
+	defer res.Body.Close()
 	assert.NoError(err, "expect no error from http get call")
 	assert.Equal(res.StatusCode, http.StatusOK, "should be successful http request")
 	assert.Equal(res.Header.Get("Pragma"), "no-cache", "should match Pragma header value")
