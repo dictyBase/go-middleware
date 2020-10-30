@@ -1,3 +1,4 @@
+// Package nocache is a middleware to disable HTTP caching
 package nocache
 
 import (

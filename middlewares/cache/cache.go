@@ -1,3 +1,4 @@
+// Package cache provide middleware to enable HTTP caching
 package cache
 
 import (
