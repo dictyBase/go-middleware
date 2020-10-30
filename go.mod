@@ -9,4 +9,5 @@ require (
 	github.com/manyminds/api2go v0.0.0-20190524072506-70a1ce7752ec
 	github.com/rs/cors v1.7.0
 	github.com/sirupsen/logrus v1.7.0
+	github.com/stretchr/testify v1.4.0
 )
