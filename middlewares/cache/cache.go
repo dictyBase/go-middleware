@@ -16,7 +16,7 @@ type HTTPCache struct {
 
 // NeNeNewHTTPCache is a constructor for HTTPCache
 func NewHTTPCache(month int, t time.Time) *HTTPCache {
-	duration := time.Now().AddDate(0, month, 0).Sub(time.Now())
+	duration := time.Until(time.Now().AddDate(0, month, 0))
 	return &HTTPCache{
 		MaxAge:  int(duration.Seconds()),
 		Expires: t.Format(http.TimeFormat),
