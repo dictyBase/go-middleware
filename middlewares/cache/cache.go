@@ -24,7 +24,7 @@ func NewHTTPCache(month int) *HTTPCache {
 	}
 }
 
-// Handler is a net/http middleware for setting up
+// Middleware is a net/http middleware for setting up
 // max-age and Expires cache parameters
 func (c *HTTPCache) Middleware(next http.Handler) http.Handler {
 	fn := func(w http.ResponseWriter, r *http.Request) {

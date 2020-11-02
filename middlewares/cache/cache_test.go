@@ -18,8 +18,8 @@ func (h *testHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 func TestHandler(t *testing.T) {
 	curr := time.Now()
-	c := NewHTTPCache(11, curr.AddDate(0, 11, 0))
-	ts := httptest.NewServer(c.Handler(&testHandler{}))
+	c := NewHTTPCache(11)
+	ts := httptest.NewServer(c.Middleware(&testHandler{}))
 	assert := require.New(t)
 	res, err := ts.Client().Get(ts.URL)
 	assert.NoError(err, "expect no error from http get call")

@@ -17,7 +17,7 @@ func (h *testHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 }
 
 func TestHandler(t *testing.T) {
-	ts := httptest.NewServer(Handler(&testHandler{}))
+	ts := httptest.NewServer(Middleware(&testHandler{}))
 	defer ts.Close()
 	assert := require.New(t)
 	res, err := ts.Client().Get(ts.URL)
