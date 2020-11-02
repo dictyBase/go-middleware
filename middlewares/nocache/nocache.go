@@ -17,12 +17,12 @@ var noCacheHeaders = map[string]string{
 	"X-Accel-Expires": "0",
 }
 
-// Handler as per http://wiki.nginx.org/HttpProxyModule. It sets:
+// Middleware as per http://wiki.nginx.org/HttpProxyModule. It sets:
 //      Expires: Thu, 01 Jan 1970 00:00:00 UTC
 //      Cache-Control: no-cache, private, max-age=0
 //      X-Accel-Expires: 0
 //      Pragma: no-cache (for HTTP/1.0 proxies/clients)
-func Handler(next http.Handler) http.Handler {
+func Middleware(next http.Handler) http.Handler {
 	fn := func(w http.ResponseWriter, r *http.Request) {
 		// Set our NoCache headers
 		for k, v := range noCacheHeaders {
