@@ -16,17 +16,17 @@ type HTTPCache struct {
 }
 
 // NeNeNewHTTPCache is a constructor for HTTPCache
-func NewHTTPCache(month int, t time.Time) *HTTPCache {
-	duration := time.Until(time.Now().AddDate(0, month, 0))
+func NewHTTPCache(month int) *HTTPCache {
+	t := time.Now().AddDate(0, month, 0)
 	return &HTTPCache{
-		MaxAge:  int(duration.Seconds()),
+		MaxAge:  int(time.Until(t).Seconds()),
 		Expires: t.Format(http.TimeFormat),
 	}
 }
 
 // Handler is a net/http middleware for setting up
 // max-age and Expires cache parameters
-func (c *HTTPCache) Handler(next http.Handler) http.Handler {
+func (c *HTTPCache) Middleware(next http.Handler) http.Handler {
 	fn := func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Cache-Control", fmt.Sprintf("public, max-age=%d", c.MaxAge))
 		w.Header().Set("Expires", c.Expires)
