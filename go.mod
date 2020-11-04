@@ -3,11 +3,9 @@ module github.com/dictyBase/go-middlewares
 go 1.13
 
 require (
-	github.com/dictyBase/apihelpers v0.0.0-20191119134328-9ff59ee4c896
-	github.com/dictyBase/modware v0.0.0-20170217231152-2cb30c5dad06
-	github.com/julienschmidt/httprouter v1.3.0
-	github.com/manyminds/api2go v0.0.0-20190524072506-70a1ce7752ec
-	github.com/rs/cors v1.7.0
+	github.com/kr/pretty v0.1.0 // indirect
 	github.com/sirupsen/logrus v1.7.0
 	github.com/stretchr/testify v1.4.0
+	gopkg.in/check.v1 v1.0.0-20190902080502-41f04d3bba15 // indirect
+	gopkg.in/yaml.v2 v2.2.5 // indirect
 )
