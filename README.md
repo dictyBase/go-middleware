@@ -4,7 +4,7 @@
 [![codecov](https://codecov.io/gh/dictyBase/go-middlewares/branch/develop/graph/badge.svg)](https://codecov.io/gh/dictyBase/go-middlewares)   
 [![Maintainability](https://api.codeclimate.com/v1/badges/6be0548f1ca22d27fc01/maintainability)](https://codeclimate.com/github/dictyBase/go-middlewares/maintainability)
 ![Last commit](https://badgen.net/github/last-commit/dictyBase/go-middlewares/develop?style=plastic)   
-[![Funding](https://badgen.net/badge/NIGMS/Rex%20L%20Chisholm,dictyBase,DCR/yellow?list=|)](https://projectreporter.nih.gov/project_info_description.cfm?aid=10024726&icde=0)
+[![Funding](https://badgen.net/badge/NIGMS/Rex%20L%20Chisholm,dictyBase,DCR/yellow?list=|)](https://reporter.nih.gov/project-details/10024726)
 
 Collection of [net/http](https://golang.org/pkg/net/http/) compatible golang middlewares.
 
